@@ -105,7 +105,7 @@ def main():
                     return
                 size_data += chunk
             response_size = int(size_data.decode())
-            
+
             response_buffer = b""
             while len(response_buffer) < response_size - 3:
                 chunk = sock.recv(response_size - 3 - len(response_buffer))
@@ -124,6 +124,7 @@ def main():
         # TASK 4: Close the socket when done (already called for you — explain why
         # finally: is the right place to do this even if an error occurs above).
         sock.close()
+        print("Connection closed.")
 
 if __name__ == "__main__":
     main()
