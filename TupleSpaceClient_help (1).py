@@ -46,6 +46,50 @@ def main():
             # X is "R" for READ and "G" for GET.
             # Hint: for READ/GET, size = 6 + len(key). For PUT, size = 7 + len(key) + len(value).
             # Reject lines with invalid format or key+" "+value > 970 chars.
+            if cmd == "READ" or cmd == "GET":
+
+                if len(parts) != 2:
+                    print(f"{line}:ERR Invalid format (missing key)")
+                    continue
+                key = parts[1]
+
+                if len(key) > 999:
+                    print(f"{line}:ERR Key too long")
+                    continue
+
+                if cmd == "READ":
+                    protocol_cmd = "R"
+                else:
+                    protocol_cmd = "G"
+
+                message_content = f"{protocol_cmd} {key}"
+                message_length = len(message_content)
+                message = f"{message_length:03d} {message_content}"
+
+            elif cmd == "PUT":
+                if len(parts) != 3:
+                    print(f"{line}:ERR Invalid format (missing key or value)")
+                    continue
+                key = parts[1]
+                value = parts[2]
+
+                if len(key) > 999:
+                    print(f"{line}:ERR Key too long")
+                    continue
+                if len(value) > 999:
+                    print(f"{line}:ERR Value too long")
+                    continue
+                if len(key) + 1 + len(value) > 970:
+                    print(f"{line}:ERR Key + value too long (max 970 chars)")
+                    continue
+
+                message_content = f"P {key} {value}"
+                message_length = len(message_content)
+                message = f"{message_length:03d} {message_content}"
+
+            else:
+                print(f"{line}:ERR Unknown command")
+                continue
 
 
             # TASK 3: Send the message to the server, then receive the response.
