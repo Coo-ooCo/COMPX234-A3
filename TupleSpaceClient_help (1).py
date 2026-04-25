@@ -96,7 +96,23 @@ def main():
             # - Send:    sock.sendall(message.encode())
             # - Receive: first read 3 bytes to get the response size (like the server does).
             #            Then read the remaining (size - 3) bytes to get the response body.
-
+            sock.sendall(message.encode())
+            size_data = b""
+            while len(size_data) < 3:
+                chunk = sock.recv(3 - len(size_data))
+                if not chunk:
+                    print(f"{line}:ERR Connection closed by server")
+                    return
+                size_data += chunk
+            response_size = int(size_data.decode())
+            
+            response_buffer = b""
+            while len(response_buffer) < response_size - 3:
+                chunk = sock.recv(response_size - 3 - len(response_buffer))
+                if not chunk:
+                    print(f"{line}:ERR Connection closed by server")
+                    return
+                response_buffer += chunk
 
             response = response_buffer.decode().strip()
             print(f"{line}: {response}")
